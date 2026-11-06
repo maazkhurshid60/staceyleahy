@@ -3,8 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { agent, film, heroCards, images } from "@/content/site";
-import { PlayIcon, useVideo } from "../VideoPlayer";
+import { agent, heroCards, images } from "@/content/site";
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as React.CSSProperties;
 
@@ -17,7 +16,6 @@ const FAN: { transform: string; z: number; dim: string }[] = [
 
 /** Inset photo frame: headline on the left, the three series as a small overlapping card fan on the right. */
 export default function Hero() {
-  const openVideo = useVideo();
   const count = heroCards.length;
   const [{ active, prev }, setSlide] = useState({ active: 0, prev: 0 });
   const setActive = (fn: (a: number) => number) => setSlide((s) => ({ active: fn(s.active), prev: s.active }));
@@ -104,16 +102,6 @@ export default function Hero() {
                 Work With Stacey
                 <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
-              <button
-                type="button"
-                onClick={() => openVideo(film)}
-                className="group inline-flex items-center gap-3 text-xs font-semibold tracking-[0.16em] text-ivory/85 uppercase hover:text-gold-300"
-              >
-                <span className="flex size-10 items-center justify-center rounded-full border border-ivory/40 transition-colors group-hover:border-gold-300">
-                  <PlayIcon className="ml-0.5 size-3" />
-                </span>
-                Watch the film
-              </button>
             </div>
           </div>
 
@@ -143,7 +131,7 @@ export default function Hero() {
                     onClick={isActive ? undefined : () => choose(i)}
                     aria-hidden={!isActive}
                   >
-                    <CardBody card={card} active={isActive} eager={i === 0} onPlay={() => card.video && openVideo(card.video)} />
+                    <CardBody card={card} active={isActive} eager={i === 0} />
                   </article>
                 );
               })}
@@ -179,7 +167,7 @@ export default function Hero() {
                   className="enter-card group relative aspect-[3/4.1] w-[66%] max-w-[17rem] shrink-0 snap-start overflow-hidden rounded-2xl border border-ivory/60 bg-forest-950"
                   style={delay(700 + i * 160)}
                 >
-                  <CardBody card={card} active onPlay={() => card.video && openVideo(card.video)} />
+                  <CardBody card={card} active />
                 </article>
               ))}
             </div>
@@ -194,15 +182,11 @@ function CardBody({
   card,
   active,
   eager = false,
-  onPlay,
 }: {
   card: (typeof heroCards)[number];
   active: boolean;
   eager?: boolean;
-  onPlay: () => void;
 }) {
-  const circle =
-    "flex size-14 items-center justify-center rounded-full border-[1.5px] border-ivory/90 bg-forest-950/25 text-ivory backdrop-blur-[2px] transition-all duration-300 hover:scale-105 hover:border-gold-300 hover:text-gold-300";
   return (
     <>
       <Image
@@ -215,27 +199,6 @@ function CardBody({
         style={{ objectPosition: card.imagePosition }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(11_26_19/0)_40%,rgb(11_26_19/0.55)_65%,rgb(11_26_19/0.92)_100%)]" />
-
-      <div className="absolute inset-x-0 top-[38%] flex justify-center">
-        {card.video ? (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onPlay();
-            }}
-            tabIndex={active ? 0 : -1}
-            aria-label={`Play: ${card.video.title}`}
-            className={circle}
-          >
-            <PlayIcon className="ml-1 size-5" />
-          </button>
-        ) : (
-          <Link href={card.href} tabIndex={active ? 0 : -1} aria-label={`Go to ${card.title}`} className={`${circle} text-xl`}>
-            <span aria-hidden="true">→</span>
-          </Link>
-        )}
-      </div>
 
       <div className="absolute inset-x-0 bottom-0 p-5">
         <p className="flex items-center gap-3 text-sm">
