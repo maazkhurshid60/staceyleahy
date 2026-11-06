@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { HeroVideo } from "@/content/site";
+import { asset } from "@/lib/base-path";
 
 const VideoContext = createContext<(video: HeroVideo) => void>(() => {});
 
@@ -48,8 +49,8 @@ export function VideoProvider({ children }: { children: React.ReactNode }) {
             <div className="gold-frame aspect-video w-full overflow-hidden bg-black">
               {video.kind === "file" ? (
                 <video
-                  src={video.src}
-                  poster={video.poster}
+                  src={asset(video.src)}
+                  poster={video.poster && asset(video.poster)}
                   controls
                   autoPlay
                   playsInline
